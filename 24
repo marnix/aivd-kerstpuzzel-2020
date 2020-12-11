@@ -1,4 +1,8 @@
 #!/usr/bin/env python3
+
+import time
+import calendar
+
 def prime_factors(n):
     i = 2
     factors = []
@@ -17,12 +21,21 @@ OPGAVE = [
 ( 1513873680, 8 ), ( 1545430980, 6 ), ( 1576988340, 7 )
 ]
 
-prev = None
-for a,b in OPGAVE:
+# Every `a` is the time of the solstice ('winterwende'),
+# in seconds since the UNIX epoch (Jan 1, 1970 00:00 AM GMT),
+# from 2002 to 2019.
+# Every `b` is the number of prime factors in `a`.
+
+# This is the solution, the entry for 2020, according to https://nl.wikipedia.org/wiki/Equinox :
+a = calendar.timegm(time.strptime('2020-12-21 10:02:00 GMT', '%Y-%m-%d %H:%M:%S %Z'))
+b = len(list(prime_factors(a)))
+
+SOLUTION = [(a,b)]
+
+for a,b in OPGAVE + SOLUTION:
     factors = list(prime_factors(a))
-    q = a-prev if prev else 0
-    p = (q//60 - 525900 - 37) if prev else 0
-    c = chr(ord('a')-1 + p) if p else ' '
-    print('%9d' % q, '=', '%2d' % p, '* 60 +', 60*(525937), ': %2s' % c, a, b, factors)
     assert len(factors) == b
-    prev = a
+    print('(', a, ',', '%2d' % b, ')', time.strftime('%Y-%m-%d %H:%M:%S %Z', time.gmtime(a)), factors)
+
+# The solution is the last printed entry:
+# ( 1608544920 ,  8 )
