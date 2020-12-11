@@ -70,22 +70,25 @@ for i in range(1,7):
 with open('18-input', 'r') as f:
     digits = f.read()
 
-#next_letters= 'ABC DEFGHIJKLMNOPRSTUVWZ'
-next_letters = 'nem sadtrjouwlichkgvbzfp' # the solution, see 18-antwoord
-letters = {}
-k = Key()
-for d in map(int, digits):
-    k += moves[d]
-    if d == 0:
-        if k not in letters:
-            letters[k] = next_letters[0]
-            next_letters = next_letters[1:]
-        print(letters[k], end='')
-print()
+def print_decoded(digits, keyboard={}):
+    #next_letters= 'ABC DEFGHIJKLMNOPRSTUVWZ'
+    next_letters = 'nem sadtrjouwlichkgvbzfp' # the solution, see 18-antwoord
+    k = Key()
+    for d in map(int, digits):
+        k += moves[d]
+        if d == 0:
+            if k not in keyboard:
+                keyboard[k] = next_letters[0]
+                next_letters = next_letters[1:]
+            print(keyboard[k], end='')
+    print()
+
+KEYBOARD = {}
+print_decoded(digits, KEYBOARD)
 
 print()
 #print(letters)
 #print()
-for k,l in letters.items():
+for k,l in KEYBOARD.items():
     output_at(2 * k.b, 2 * k.a + k.b, l)
 print_output()
