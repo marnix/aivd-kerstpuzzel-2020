@@ -50,3 +50,12 @@ def subtract(x,y):
 
 assert list(parse('-J * D -H -T')) == [-10, 0, 4, -8, -20]
 assert show(subtract(parse('DAG'), parse('NACHT'))) == '-J * D -H -T'
+
+##--##--##
+
+def attempt(problem, first):
+    """both inputs and output are strings"""
+    second = show(subtract(parse(first), list(parse(problem))), allow_trailing=False)
+    print(first, '-', second, "=", problem)
+    
+attempt('G F -K Z E L', 'WOEZEL')
