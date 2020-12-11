@@ -37,6 +37,8 @@ def parse(s):
         elif 'A' <= c <= 'Z':
             yield factor * (ord(c) - ord('A') + 1)
             factor = 1
+        else:
+            assert False, (ord(c), c)
 
 def add(x,y):
     for a,b in itertools.zip_longest(x, y, fillvalue=0):
@@ -59,3 +61,4 @@ def attempt(problem, first):
     print(first, '-', second, "=", problem)
     
 attempt('G F -K Z E L', 'WOEZEL')
+attempt('* -K * D -O Q -T -R -A', 'CAESAR')
