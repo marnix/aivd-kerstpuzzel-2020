@@ -1,0 +1,41 @@
+#!/usr/bin/env python3
+
+import itertools
+
+def show(x):
+    result = []
+    sep = ''
+    for a in x:
+        if a < 0: sep = ' '
+        if a == 0: result += ['*']
+        else:
+            c = chr(ord('A') + abs(a) - 1)
+            result += [('-' if a < 0 else '') + c]
+    return sep.join(result)
+
+def parse(s):
+    factor = 1
+    for c in s:
+        if c.isspace():
+            pass
+        elif c == '-':
+            factor = -1
+        elif c == '*':
+            assert factor == 1
+            yield 0
+        elif 'A' <= c <= 'Z':
+            yield factor * (ord(c) - ord('A') + 1)
+            factor = 1
+
+def add(x,y):
+    for a,b in itertools.zip_longest(x, y, fillvalue=0):
+        yield a+b
+
+def negate(x):
+    for a in x: yield -a
+
+def subtract(x,y):
+    return add(x, negate(y))
+
+assert list(parse('-J * D -H -T')) == [-10, 0, 4, -8, -20]
+assert show(subtract(parse('DAG'), parse('NACHT'))) == '-J * D -H -T'
