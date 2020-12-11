@@ -2,15 +2,26 @@
 
 import itertools
 
-def show(x):
+def show(x, allow_trailing = True):
     result = []
+    nr_trailing = 0
     sep = ''
     for a in x:
         if a < 0: sep = ' '
-        if a == 0: result += ['*']
+        if a == 0:
+            nr_trailing += 1
         else:
+            if nr_trailing:
+                result += ['*']*nr_trailing
+                sep = ' '
+                nr_trailing = 0
             c = chr(ord('A') + abs(a) - 1)
             result += [('-' if a < 0 else '') + c]
+    if allow_trailing:
+        if nr_trailing:
+            result += ['*']*nr_trailing
+            sep = ' '
+            nr_trailing = 0
     return sep.join(result)
 
 def parse(s):
