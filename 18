@@ -24,20 +24,15 @@ for i in range(1,7):
 with open('18-input', 'r') as f:
     digits = f.read()
 
-next_letter = 'A'
-letters = {
-        # my guesses go here...
-        Key(a=-3, b=1, c=2): ' ',
-        }
+next_letters = 'ABC DEFGHIJKLMNOPRSTUVWZ'
+letters = {}
 k = Key()
 for d in map(int, digits):
     k += moves[d]
     if d == 0:
         if k not in letters:
-            letters[k] = next_letter
-            while True:
-                next_letter = '?' if next_letter == 'Z' else chr(ord(next_letter)+1)
-                if next_letter not in 'QXY': break
+            letters[k] = next_letters[0]
+            next_letters = next_letters[1:]
         print(letters[k], end='')
 print()
 print(letters)
