@@ -1,0 +1,43 @@
+#!/usr/bin/env python3
+
+from dataclasses import dataclass
+
+@dataclass(frozen=True)
+class Key:
+    """sum of these fields is always zero"""
+    a: int = 0
+    b: int = 0
+    c: int = 0
+
+    def __add__(self, other):
+        return Key(self.a+other.a, self.b+other.b, self.c+other.c)
+
+    def rotate(self):
+        return Key(-self.b, -self.c, -self.a)
+
+moves = [Key(0,0,0)] + [None]*6
+k = Key(1,-1,0)
+for i in range(1,7):
+    k = k.rotate()
+    moves[i] = k
+
+with open('18-input', 'r') as f:
+    digits = f.read()
+
+next_letter = 'A'
+letters = {
+        # my guesses go here...
+        Key(a=-3, b=1, c=2): ' ',
+        }
+k = Key()
+for d in map(int, digits):
+    k += moves[d]
+    if d == 0:
+        if k not in letters:
+            letters[k] = next_letter
+            while True:
+                next_letter = '?' if next_letter == 'Z' else chr(ord(next_letter)+1)
+                if next_letter not in 'QXY': break
+        print(letters[k], end='')
+print()
+print(letters)
