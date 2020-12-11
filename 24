@@ -17,7 +17,12 @@ OPGAVE = [
 ( 1513873680, 8 ), ( 1545430980, 6 ), ( 1576988340, 7 )
 ]
 
+prev = None
 for a,b in OPGAVE:
     factors = list(prime_factors(a))
-    print(b, factors)
+    q = a-prev if prev else 0
+    p = (q//60 - 525900 - 37) if prev else 0
+    c = chr(ord('a')-1 + p) if p else ' '
+    print('%9d' % q, '=', '%2d' % p, '* 60 +', 60*(525937), ': %2s' % c, a, b, factors)
     assert len(factors) == b
+    prev = a
