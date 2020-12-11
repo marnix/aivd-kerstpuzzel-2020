@@ -92,3 +92,8 @@ print()
 for k,l in KEYBOARD.items():
     output_at(2 * k.b, 2 * k.a + k.b, l)
 print_output()
+
+print()
+kerstpuzzel_18b = '2205554056012206043330230566600401220'
+print('the following will print "kerstpuzzel", from %s:' % kerstpuzzel_18b)
+print_decoded(kerstpuzzel_18b, KEYBOARD)
