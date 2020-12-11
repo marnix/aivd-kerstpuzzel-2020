@@ -2,6 +2,52 @@
 
 from dataclasses import dataclass
 
+##--##--
+## helper code
+
+output, min_x, max_y = None, None, None
+def output_at(x, y, c):
+    global output, min_x, max_y
+    #if output: print('current state is top left (%d,%d) = %s' % (min_x, max_y, output))
+    #print('putting %s at (%d,%d)' % (c,x,y))
+    assert len(c) == 1
+
+    if output == None:
+        output, min_x, max_y = [' '], x, y
+    #if output: print('current state is top left (%d,%d) = %s' % (min_x, max_y, output))
+
+    if x < min_x:
+        output = list(' '*(min_x - x) + line for line in output)
+        min_x = x
+    #if output: print('current state is top left (%d,%d) = %s' % (min_x, max_y, output))
+    if len(output[0]) < x - min_x + 1:
+        #assert len(SPACES) == x - min_x - len(line) + 1
+        output = list(line + ' '*(x - min_x - len(line) + 1) for line in output)
+        assert len(output[0]) - 1 == x - min_x
+    #if output: print('current state is top left (%d,%d) = %s' % (min_x, max_y, output))
+    assert min_x <= x < min_x + len(output[0])
+
+    if y > max_y:
+        output = [' '*len(output[0])]*(y - max_y) + output
+        max_y = y
+    #if output: print('current state is top left (%d,%d) = %s' % (min_x, max_y, output))
+    if len(output) < max_y - y + 1:
+        output = output + [' '*len(output[0])]*(max_y - y - len(output) + 1)
+    #if output: print('current state is top left (%d,%d) = %s' % (min_x, max_y, output))
+    assert max_y - len(output) < y <= max_y, (y, max_y, output)
+
+    line = list(output[max_y - y])
+    line[x - min_x] = c
+    output[max_y - y] = ''.join(line)
+
+def print_output():
+    global output
+    for line in output or []:
+        print(line)
+
+## END helper code
+##--##--
+
 @dataclass(frozen=True)
 class Key:
     """sum of these fields is always zero"""
@@ -36,4 +82,10 @@ for d in map(int, digits):
             next_letters = next_letters[1:]
         print(letters[k], end='')
 print()
-print(letters)
+
+print()
+#print(letters)
+#print()
+for k,l in letters.items():
+    output_at(2 * k.b, 2 * k.a + k.b, l)
+print_output()
