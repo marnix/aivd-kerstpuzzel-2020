@@ -1,3 +1,10 @@
+# The dependencies listed in requirements.txt
+# which end up here after `pip install ... --target .`
+## Pillow:
+/PIL/
+/Pillow-*.dist-info/
+/Pillow.libs/
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
