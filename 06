@@ -63,7 +63,6 @@ for y in range(17):
         if c == ' ': assert y == 16 and x == 29
         elif c == 'g': TR_WORDS += ['']
         else: TR_WORDS[-1] += c
-print(TR_WORDS)
 
 ##--##--##
 
@@ -75,6 +74,29 @@ candict = {}
 for tr_word in set(TR_WORDS):
     candict[tr_word] = candidates(tr_word)
 
+##--##--##
+
 for tr_word, cands in sorted(candict.items(), key=lambda x: len(x[1]), reverse=True):
     print(tr_word, cands)
     print()
+print('Plaatje:', ' '.join(TR_WORDS))
+print()
+
+# Quote from Spinoza (source not yet known) which seems to fit quite well,
+# but not completely.
+# 
+# (Puzzle image seems to have "als ... bestaande", so with an additional 'brb' word.
+# Puzzle has 19 more words after this quote.)
+# 
+# Found this searching Dutch quotation sites for dictionary words matching 'rrbbbrrbrbb'
+# and finding this one for 'uitsluitend', with the required surrounding 'brbb ... brrb' words.
+ATTEMPT = 'Aan hen die vragen waarom de mensen niet allen zodanig geschapen zijn, dat zij zich uitsluitend door de rede laten leiden antwoord ik slechts dit: omdat in het Zijn voldoende stof aanwezig is om alles, van de hoogste tot de laagste trap van volmaaktheid, voort te brengen of, om nog duidelijker te spreken, omdat het Zijn als oorzaak zo alles omvattend is, dat het alles, wat als bestaande gedacht kan worden, voortbrengt.'
+
+TR_WORDS_ATTEMPT = ['']
+for c in map(str.upper, ATTEMPT):
+    if c in 'AEIOU': TR_WORDS_ATTEMPT[-1] += 'r'
+    elif 'A' <= c <= 'Z': TR_WORDS_ATTEMPT[-1] += 'b'
+    elif TR_WORDS_ATTEMPT[-1] != '': TR_WORDS_ATTEMPT += [''] # start new word
+while TR_WORDS_ATTEMPT[-1] == '': TR_WORDS_ATTEMPT = TR_WORDS_ATTEMPT[:-1]
+print('Poging: ', ' '.join(TR_WORDS_ATTEMPT));
+print()
