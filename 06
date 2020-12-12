@@ -1,0 +1,26 @@
+#!/usr/bin/env python3
+
+"""
+The top image in this problem is to be interpreted as follows,
+reading row by row, left to right:
+    - red: vowel
+    - blue: consonant
+    - green: space
+
+The subtitle gives, for every letter that occurs,
+the number of occurrences in Roman numerals.
+
+So there are 163 red, 255 blue, and 91 green triangles, so:
+    * 92 words
+    * 163 vowels (AEIOU)
+    * 255 consonants (BCDFGHJKLMNPRSTVWZ)
+"""
+
+import subprocess
+
+#trord = "brrbrbrbbrb"
+#trord = "brbbrrbbbrrb"
+trord = "brrbbbbrbbb"
+
+regex = r'^' + r'[^A-Z]*'.join(r'[AEIOU]' if c == 'r' else r'[^AEIOU\W]' for c in trord) + r'$'
+print(subprocess.check_output(['grep', '-i', '-P', regex, '/usr/share/dict/nederlands']).decode('utf-8'))
