@@ -18,6 +18,43 @@ So there are 163 red, 255 blue, and 91 green triangles, so:
 
 import subprocess
 
+import PIL.Image
+
+# The image is a screenshot I took of the rendered PDF,
+# 999x816 true aspect ratio (squares are square),
+# 30 triangles wide, top part = 17 rows, bottom part = 4 rows.
+IMAGE = PIL.Image.open('06-image.png')
+(_, _, WIDTH, HEIGHT) = IMAGE.getbbox()
+def color_at(px, py):
+    """
+    Returns 'r', 'g', 'b', or ' ' (or crashes if confused).
+    0 <= x < 30 and (-4 <= y < 0 or 0 <= y < 17) # origin at top left
+    """
+    global IMAGE
+    psize = WIDTH/30
+    origin = (psize/2, psize/2 + (py < 0)*HEIGHT) # center of (0,0) pixel
+    x,y = origin[0] + px*psize, origin[1] + py*psize # center of (px,py) pixel
+    # sample psize/4 in all compass directions around x,y
+    guess = ' '
+    for dx,dy in [(1,0),(0,1),(-1,0),(0,-1)]:
+        r,g,b,_ = IMAGE.getpixel((x+dx*psize/4,y+dy*psize/4))
+        c = None
+        if r>127 and g<128 and b<128: c = 'r'
+        if r<128 and g>127 and b<128: c = 'g'
+        if r<128 and g<128 and b>127: c = 'b'
+        if r>127 and g>127 and b>127: c = ' '
+        if not c: assert False, (px,py,x,y,dx,dy,r,g,b,c,guess)
+        assert guess == c or guess == ' ' or c == ' ', (px,py,x,y,dx,dy,r,g,b,c,guess)
+        if c != ' ': guess = c
+    assert guess, (px,py,x,y)
+    return guess
+
+assert color_at(0,0) == 'r'
+assert color_at(1,1) == 'b'
+assert color_at(29,-4) == 'g'
+
+##--##--##
+
 TR_WORDS = """
 brrbrbrbbrb
 brbbrrbbbrrb
