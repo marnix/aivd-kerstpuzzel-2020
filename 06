@@ -55,15 +55,20 @@ assert color_at(29,-4) == 'g'
 
 ##--##--##
 
-TR_WORDS = """
-brrbrbrbbrb
-brbbrrbbbrrb
-brrbbbbrbbb
-rrbbbrrbrbb
-""".lstrip().splitlines()
+TR_WORDS = ['']
+for y in range(17):
+    for x in range(30):
+        c = color_at(x,y)
+        # sanity check at the end
+        if c == ' ': assert y == 16 and x == 29
+        elif c == 'g': TR_WORDS += ['']
+        else: TR_WORDS[-1] += c
+print(TR_WORDS)
+
+##--##--##
 
 def candidates(tr_word):
-    regex = r'^' + r'[^A-Z]*'.join(r'[AEIOU]' if c == 'r' else r'[^AEIOU\W]' for c in tr_word) + r'$'
+    regex = r'^' + r'[^A-Z]*'.join(r'[AEIOU]' if c == 'r' else r'[BCDFGHJKLMNPRSTVWZ]' for c in tr_word) + r'$'
     return subprocess.check_output(['grep', '-i', '-P', regex, '/usr/share/dict/nederlands']).decode('utf-8').splitlines();
 
 candict = {}
