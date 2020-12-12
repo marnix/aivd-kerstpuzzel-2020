@@ -17,8 +17,8 @@ So there are 163 red, 255 blue, and 91 green triangles, so:
 """
 
 import subprocess
-
 import PIL.Image
+from collections import Counter
 
 # The image is a screenshot I took of the rendered PDF,
 # 999x816 true aspect ratio (squares are square),
@@ -55,6 +55,13 @@ assert color_at(29,-4) == 'g'
 
 ##--##--##
 
+# The text-with-roman-numerals contains the following (hand-decoded):
+FREQUENCIES = [44,5,7,33,56,3,10,13,27,6,6,20,9,35,32,4,0,18,22,37,4,13,5,0,0,9]
+assert len(FREQUENCIES) == 26
+assert sum(FREQUENCIES) == 163 + 255
+
+##--##--##
+
 TR_WORDS = ['']
 for y in range(17):
     for x in range(30):
@@ -63,6 +70,9 @@ for y in range(17):
         if c == ' ': assert y == 16 and x == 29
         elif c == 'g': TR_WORDS += ['']
         else: TR_WORDS[-1] += c
+assert len(TR_WORDS) == 92
+assert ''.join(TR_WORDS).count('r') == 163
+assert ''.join(TR_WORDS).count('b') == 255
 
 ##--##--##
 
@@ -105,3 +115,21 @@ for c in map(str.upper, ATTEMPT):
 while TR_WORDS_ATTEMPT[-1] == '': TR_WORDS_ATTEMPT = TR_WORDS_ATTEMPT[:-1]
 print('Poging: ', ' '.join(TR_WORDS_ATTEMPT));
 print()
+
+##--##
+
+# When we take TR_WORDS as calculated above,
+# and remove the parts matching TR_WORDS_ATTEMPT,
+# this is what is left
+# (the first 'brb' word between "als ... bestaande",
+# the rest at the very end).
+#   Yes, this could have been automated.  I didn't bother.
+MISSING_FROM_ATTEMPT='brb br brrb brb br bbbbrbbrb brb brb brbrrb rb br bbrrbrb brrb br brbb brb br brrbbbbrb rb brbrb'
+
+print_sorted_candidates('Over:   ', MISSING_FROM_ATTEMPT.split())
+
+available_letters = Counter({chr(ord('A')+i):n for i,n in enumerate(FREQUENCIES)})
+used_letters = Counter(ATTEMPT.upper())
+available_letters.subtract(used_letters)
+print('Letters:', {l:n for l,n in sorted(available_letters.items()) if 'A' <= l <= 'Z' and n != 0})
+
