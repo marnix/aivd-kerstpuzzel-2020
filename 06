@@ -20,7 +20,8 @@ import subprocess
 
 #trord = "brrbrbrbbrb"
 #trord = "brbbrrbbbrrb"
-trord = "brrbbbbrbbb"
+#trord = "brrbbbbrbbb"
+trord = "rrbbbrrbrbb"
 
 regex = r'^' + r'[^A-Z]*'.join(r'[AEIOU]' if c == 'r' else r'[^AEIOU\W]' for c in trord) + r'$'
 print(subprocess.check_output(['grep', '-i', '-P', regex, '/usr/share/dict/nederlands']).decode('utf-8'))
