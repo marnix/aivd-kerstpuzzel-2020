@@ -70,17 +70,22 @@ def candidates(tr_word):
     regex = r'^' + r''.join(r'[AEIOU]' if c == 'r' else r'[BCDFGHJKLMNPRSTVWZ]' for c in tr_word) + r'$'
     return subprocess.check_output(['grep', '-i', '-P', regex, '/usr/share/dict/nederlands']).decode('utf-8').splitlines();
 
-candict = {}
-for tr_word in set(TR_WORDS):
-    candict[tr_word] = candidates(tr_word)
+def sorted_candidates(tr_words):
+    candict = {}
+    for tr_word in set(tr_words):
+        candict[tr_word] = candidates(tr_word)
+    return sorted(candict.items(), key=lambda x: len(x[1]), reverse=True)
+
+def print_sorted_candidates(description, tr_words):
+    for tr_word, cands in sorted_candidates(tr_words):
+        print(tr_word, cands)
+        print()
+    print(description, ' '.join(tr_words))
+    print()
 
 ##--##--##
 
-for tr_word, cands in sorted(candict.items(), key=lambda x: len(x[1]), reverse=True):
-    print(tr_word, cands)
-    print()
-print('Plaatje:', ' '.join(TR_WORDS))
-print()
+print_sorted_candidates('Plaatje:', TR_WORDS)
 
 # Quote from Spinoza (source not yet known) which seems to fit quite well,
 # but not completely.
