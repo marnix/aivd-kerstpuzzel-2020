@@ -68,11 +68,11 @@ print(TR_WORDS)
 ##--##--##
 
 def candidates(tr_word):
-    regex = r'^' + r'[^A-Z]*'.join(r'[AEIOU]' if c == 'r' else r'[BCDFGHJKLMNPRSTVWZ]' for c in tr_word) + r'$'
+    regex = r'^' + r''.join(r'[AEIOU]' if c == 'r' else r'[BCDFGHJKLMNPRSTVWZ]' for c in tr_word) + r'$'
     return subprocess.check_output(['grep', '-i', '-P', regex, '/usr/share/dict/nederlands']).decode('utf-8').splitlines();
 
 candict = {}
-for tr_word in TR_WORDS:
+for tr_word in set(TR_WORDS):
     candict[tr_word] = candidates(tr_word)
 
 for tr_word, cands in sorted(candict.items(), key=lambda x: len(x[1]), reverse=True):
