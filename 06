@@ -18,10 +18,21 @@ So there are 163 red, 255 blue, and 91 green triangles, so:
 
 import subprocess
 
-#trord = "brrbrbrbbrb"
-#trord = "brbbrrbbbrrb"
-#trord = "brrbbbbrbbb"
-trord = "rrbbbrrbrbb"
+TR_WORDS = """
+brrbrbrbbrb
+brbbrrbbbrrb
+brrbbbbrbbb
+rrbbbrrbrbb
+""".lstrip().splitlines()
 
-regex = r'^' + r'[^A-Z]*'.join(r'[AEIOU]' if c == 'r' else r'[^AEIOU\W]' for c in trord) + r'$'
-print(subprocess.check_output(['grep', '-i', '-P', regex, '/usr/share/dict/nederlands']).decode('utf-8'))
+def candidates(tr_word):
+    regex = r'^' + r'[^A-Z]*'.join(r'[AEIOU]' if c == 'r' else r'[^AEIOU\W]' for c in tr_word) + r'$'
+    return subprocess.check_output(['grep', '-i', '-P', regex, '/usr/share/dict/nederlands']).decode('utf-8').splitlines();
+
+candict = {}
+for tr_word in TR_WORDS:
+    candict[tr_word] = candidates(tr_word)
+
+for tr_word, cands in sorted(candict.items(), key=lambda x: len(x[1]), reverse=True):
+    print(tr_word, cands)
+    print()
