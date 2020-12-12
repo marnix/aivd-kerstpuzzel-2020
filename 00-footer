@@ -1,0 +1,38 @@
+#!/usr/bin/env python3
+
+# encoding: look at the cells in the right-most column
+#  1 = 1 live cell (in the middle)
+#  2 = 2 live cells, at the bottom
+#  @ = 2 live cells, at the top (mnemonic: shift-2)
+#  3 = 3 live cells
+RAW_FOOTERS = """
+        31123323@333231
+        132323231332133
+        23@33332321@123
+        321232313321312
+        312313231213121
+        232313@33213@13
+        323@31132323132
+        333211121112132
+        313323323111213
+        123@11323233321
+        313233332332321
+        33232132332333@
+        13323323@133233
+        21@311123123123
+        13@33213@132321
+        332323132313323
+        12132133@331233
+        212113232133323
+        132312131323333
+        21@311232313213
+        32331133
+""".strip().split()
+
+# some sanity checks
+FOOTERS = ''.join(RAW_FOOTERS)
+assert all(n == (8 if i == 20 else 15) for i,n in enumerate(map(len, RAW_FOOTERS)))
+
+actual_bottom_dots = [sum({'2':3,'1':2,'3':2,'@':1}[c] for c in line) for line in RAW_FOOTERS]
+expected_bottom_dots = [32,34,32,35,34,31,33,34,33,33,34,33,32,33,31,34,32,35,33,33,17]
+assert expected_bottom_dots == actual_bottom_dots, (expected_bottom_dots, actual_bottom_dots)
