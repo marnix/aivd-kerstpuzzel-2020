@@ -131,5 +131,5 @@ print_sorted_candidates('Over:   ', MISSING_FROM_ATTEMPT.split())
 available_letters = Counter({chr(ord('A')+i):n for i,n in enumerate(FREQUENCIES)})
 used_letters = Counter(ATTEMPT.upper())
 available_letters.subtract(used_letters)
-print('Letters:', {l:n for l,n in sorted(available_letters.items()) if 'A' <= l <= 'Z' and n != 0})
+print('Letters:', ''.join(l*n for l,n in sorted(available_letters.items()) if 'A' <= l <= 'Z' and n != 0))
 
