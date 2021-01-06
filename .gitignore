@@ -1,6 +1,9 @@
 # The final document which I'm not putting under version control
 /AIVD?kerstpuzzel?2020*.pdf
 
+# The password used for the PDF by ccrypt
+/ccrypt-key
+
 # The dependencies listed in requirements.txt
 # which end up here after `pip install ... --target .`
 ## Pillow:
