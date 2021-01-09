@@ -1,0 +1,91 @@
+#!/usr/bin/env python3
+
+import subprocess
+import re
+from collections import namedtuple
+
+OPGAVE = """
+1. e4 e5 2. h4 h6 3. ?h3 ?h7 4. d3 f6 5. ?h5+ ?e7 6. a4 d5 7. ?g3 ?f5 8. ?xg7+ ?xg7 9. ?c3 ?f8 10. ?f3 ?g6
+11. b3 c6 12. ?d2 ?a6 13. ?a3+ ?e7 14. ?b2 ?d6 15. ?e2 ?b4 16. ?a3 ?c5 17. ?e3 ?c8 18. ?c1 ?a2+ 19. ?xa2
+?e7 20. ?f3 ?f5 21. ?xe5 ?d6 22. ?xg6+ ?f7 23. ?h5 ?e6 24. ?d1 ?h8 25. ?b2 ?a3 26. ?f4+ ?e5 27. ?c1 ?xc1+
+28. ?xc1 ?hc7 29. ?a1 ?g8 30. ?b2 ?g7 31. ?e2 ?d4 32. ?b5++ ?c5 33. ?d2 ?xh4 34. exd5 cxb5 35. axb5
+b6 36. ?e6+ ?xd5 37. ?e1 ?e8 38. Dd4#
+""".strip()
+#OPGAVE = """
+#1. e4 e5 2. h4 h6 3. ?h3 ?h7 4. d3 f6 5. ?h5+ ?e7 6. a4 d5 7. ?g3 ?f5 8. ?xg7+
+
+
+def moves_from_text(text):
+    # translate to pgn-extract output language, English
+    return [w.replace('++','+').replace('D','Q') for w in text.split() if w[-1] != "."]
+
+
+def pgn_extract(moves):
+    """returns None for invalid moves"""
+    pgn_extract_result = subprocess.run(["pgn-extract", "--notags"], input=" ".join(moves).encode('ascii'), capture_output=True)
+    #print(pgn_extract_result.stdout)
+    #print(pgn_extract_result.stderr)
+    m = re.search(r'(\d+) games? matched', pgn_extract_result.stderr.decode('ascii'))
+    assert m and m.group(1) in "01", "should have 0 or 1 games matched in stderr " + str(pgn_extract_result.stderr)
+    if m.group(1) == "0": return None
+    return pgn_extract_result.stdout.decode('ascii')
+
+def is_valid_game(moves, game_result='*'):
+    moves = list(moves + [game_result])
+    pgn_text = pgn_extract(moves)
+    if not pgn_text: return False
+    result_moves = moves_from_text(pgn_text)
+    if moves != result_moves:
+#        if len(moves) > 62:
+#            print("DEBUG: tried", moves)
+#            print("DEBUG: found", result_moves)
+        return False
+    else:
+        return True
+
+assert(is_valid_game("".split()) == True)
+assert(is_valid_game("xe4 e5 Nf3".split()) == False)
+assert(is_valid_game("e4 e5 Nf3".split()) == True)
+assert(is_valid_game("e4 e5 Nf3+".split()) == False)
+
+
+def print_games(state, known_good_moves, other_moves):
+    state[0] = state[0]._replace(count=state[0].count+1)
+    i = 0
+
+    for m in other_moves:
+        if '?' in m:
+            assert '?' not in m[1], "sanity check"
+            break
+        i += 1
+    no_more_moves = i == len(other_moves) # no ?s left means: at end!
+
+    start = known_good_moves + other_moves[:i]
+
+    print(chr(27)+"7"+chr(27)+"[2K" + '%30s' % state + ' ' + '.' * len(start) + chr(27)+"8", end='')
+    if len(start) > state[0].max:
+#        print(chr(27)+"[2K", end='')
+#        print("FOUND LONGEST UNTIL NOW, length", len(start), ':',  *start)
+        state[0] = state[0]._replace(max=len(start))
+
+    if no_more_moves:
+        game_result ='1-0' if len(start)%2 else '0-1'
+        if is_valid_game(start, game_result=game_result):
+            print(chr(27)+"[2K")
+            print("FOUND:")
+            print(pgn_extract(start + [game_result]))
+        else:
+            pass # correct but incomplete game
+        return
+
+    assert is_valid_game(start), "sanity check should succeed for " + str(start)
+    for piece in "NBRQK":
+        next_move = piece + other_moves[i][1:]
+        if is_valid_game(start + [next_move]):
+            rest = other_moves[i+1:]
+            print_games(state, start + [next_move], rest)
+
+
+opgave_moves = moves_from_text(OPGAVE)
+state = [namedtuple('State', 'count max')(count=0, max=0)]
+print_games(state, [], opgave_moves)
