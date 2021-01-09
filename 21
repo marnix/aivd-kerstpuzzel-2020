@@ -11,8 +11,6 @@ OPGAVE = """
 28. ?xc1 ?hc7 29. ?a1 ?g8 30. ?b2 ?g7 31. ?e2 ?d4 32. ?b5++ ?c5 33. ?d2 ?xh4 34. exd5 cxb5 35. axb5
 b6 36. ?e6+ ?xd5 37. ?e1 ?e8 38. Dd4#
 """.strip()
-#OPGAVE = """
-#1. e4 e5 2. h4 h6 3. ?h3 ?h7 4. d3 f6 5. ?h5+ ?e7 6. a4 d5 7. ?g3 ?f5 8. ?xg7+
 
 def eng_to_dut(pieces):
     return ''.join('PLTDK'['NBRQK'.index(piece)] for piece in pieces)
@@ -45,7 +43,7 @@ assert(is_valid_game("e4 e5 Nf3".split()) == True)
 assert(is_valid_game("e4 e5 Nf3+".split()) == False)
 
 
-def print_games(state, found_pieces, known_good_moves, other_moves):
+def print_games(state, found_pieces, found_pieces_sides, known_good_moves, other_moves):
     state[0] = state[0]._replace(count=state[0].count+1)
     i = 0
 
@@ -66,7 +64,10 @@ def print_games(state, found_pieces, known_good_moves, other_moves):
         game_result ='1-0' if len(start)%2 else '0-1'
         if is_valid_game(start, game_result=game_result):
             print(chr(27)+"[2K")
-            print("FOUND:", eng_to_dut(found_pieces))
+            found_pieces_dutch = eng_to_dut(found_pieces)
+            print("FOUND SOLUTION:", found_pieces_dutch)
+            print("white only:    ", ''.join(piece if side == 'w' else ' ' for (piece,side) in zip(found_pieces_dutch, found_pieces_sides)))
+            print("black only:    ", ''.join(' ' if side == 'w' else piece for (piece,side) in zip(found_pieces_dutch, found_pieces_sides)))
             print(pgn_extract(start + [game_result]))
         else:
             pass # correct but incomplete game
@@ -77,9 +78,9 @@ def print_games(state, found_pieces, known_good_moves, other_moves):
         next_move = piece + other_moves[i][1:]
         if is_valid_game(start + [next_move]):
             rest = other_moves[i+1:]
-            print_games(state, found_pieces + piece, start + [next_move], rest)
+            print_games(state, found_pieces + piece, found_pieces_sides + 'wB'[len(start)%2], start + [next_move], rest)
 
 
 opgave_moves = moves_from_text(OPGAVE)
 state = [namedtuple('State', 'count max')(count=0, max=0)]
-print_games(state, "", [], opgave_moves)
+print_games(state, "", "", [], opgave_moves)
